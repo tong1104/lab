@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8"/>
+	<meta name="description" content="Data Visualisation"/>
+	<meta name="keywords" content="HTML, CSS"/>
+	<meta name="author" content="Kam Yen Tong"/>
+
+	<title>Task 2.1 D3 Data Binding</title>
+    <link rel="stylesheet" href="../../style.css">
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+        p {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 20px;
+            margin: 10px 15%;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <ul class="navbar">
+            <li><a href="../mainpage.html">Home</a></li>
+            <li><a href="lab2.1.html">Lab 2.1</a></li>
+            <li><a href="../lab2/lab2.2.html">Lab 2.2</a></li>
+            <li><a href="../lab2/lab2.3.html">Lab 2.3</a></li>
+            <li><a href="../lab2/lab2.4.html">Lab 2.4</a></li>
+        </ul>
+    </header>
+
+    <h1>The D3 Journey Starts Here...</h1>
+
+    <script>
+        var dataset = [14, 5, 26, 23, 9];
+        d3.select("body").selectAll("p")
+            .data(dataset)
+            .enter()
+            .append("p")
+            .style("color", function(d) {
+                if(d > 10) {
+                    return "red";
+                }
+            })
+            .text(function(d) {
+                if(d > 10) {
+                    return "Warning: NAME watched " + d + " cat videos today.";
+                } else {
+                    return "NAME watched " + d + " cat videos today.";
+                }
+            });
+    </script>
+
+    <footer>COS30045 Data Visualization<br>Kam Yen Tong Bloggs</footer>
+</body>
+</html>
