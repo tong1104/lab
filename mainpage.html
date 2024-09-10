@@ -27,8 +27,9 @@
 
         .container {
             display: flex;
+            flex-wrap: wrap; /* Allows wrapping to new rows */
             justify-content: space-around;
-            margin: 20px;
+            margin: 30px;
         }
 
         .content {
@@ -36,8 +37,9 @@
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            flex: 1;
+            flex: 0 0 45%; /* Make each .content take up 45% of the row */
             margin: 10px;
+            box-sizing: border-box;
         }
 
         section h2 {
@@ -106,6 +108,26 @@
                     <a href="lab2/lab2.2.html" class="button">Lab 2.2</a>
                     <a href="lab2/lab2.3.html" class="button">Lab 2.3</a>
                     <a href="lab2/lab2.4.html" class="button">Lab 2.4</a>
+                </div>
+            </section>
+        </div>
+
+        <div class="content">
+            <section id="lab3">
+                <h2>Lab 3</h2>
+                <div class="button-container">
+                    <a href="lab3/lab3.1.html" class="button">Lab 3.1</a>
+                    <a href="lab3/lab3.2.html" class="button">Lab 3.2</a>
+                </div>
+            </section>
+        </div>
+
+        <div class="content">
+            <section id="lab4">
+                <h2>Lab 4</h2>
+                <div class="button-container">
+                    <a href="lab4/lab4.1.html" class="button">Lab 4.1</a>
+                    <a href="lab4/lab4.2.html" class="button">Lab 4.2</a>
                 </div>
             </section>
         </div>
