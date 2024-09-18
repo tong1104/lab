@@ -29,6 +29,7 @@
         var h = 300;
         var padding = 60;
 
+        // Define a dataset with pairs of x and y values
         var dataset = [
             [5, 20],
             [500, 90],
@@ -42,35 +43,42 @@
             [220, 88],
         ];
 
+        // Create a linear scale for the x-axis
         var xScale = d3.scaleLinear()
             .domain([d3.min(dataset, function (d) { return d[0]; }), d3.max(dataset, function (d) { return d[0]; })])
             .range([padding, w - padding]);
 
+        // Create a linear scale for the y-axis
         var yScale = d3.scaleLinear()
             .domain([d3.min(dataset, function (d) { return d[1]; }), d3.max(dataset, function (d) { return d[1]; })])
             .range([h - padding, padding]);
 
+        //Create an SVG element and append it to the body
         var svg = d3.select("body")
             .append("svg")
             .attr("width", w)
             .attr("height", h);
 
+        //Create circle
         svg.selectAll("circle")
             .data(dataset)
-            .enter()
+            .enter()  // Create placeholders for each label
             .append("circle")
+            // Set the x position of the circle using the xScale
             .attr("cx", function (d) {
                 return xScale(d[0]);
             })
+            // Set the y position of the circle using the yScale
             .attr("cy", function (d) {
                 return yScale(d[1]);
             })
             .attr("r", 5)
             .attr("fill", "slategrey");
 
+        //Add labels to each data point
         svg.selectAll("text")
             .data(dataset)
-            .enter()
+            .enter()  // Create placeholders for each label
             .append("text")
             .text(function (d) {
                 return d[0] + "," + d[1];
