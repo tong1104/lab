@@ -24,6 +24,7 @@
     </header>
 
     <h1>The D3 Journey starts here...</h1>
+    <h2>The following is a modified version of original Lab 3-2</h2>
 
     <script>
         var w = 700;
@@ -31,26 +32,26 @@
         var padding = 60;
 
         var dataset = [
-            [5, 20],
-            [500, 90],
-            [250, 50],
-            [100, 33],
-            [330, 95],
-            [410, 12],
-            [475, 44],
-            [25, 67],
-            [85, 21],
-            [220, 88],
+            [2, 8],
+            [3, 5],
+            [5, 17],
+            [6, 6],
+            [6, 12],
+            [7, 20],
+            [8, 22],
+            [10, 11],
+            [5, 12],
+            [6, 16],
         ];
 
         
 
         var xScale = d3.scaleLinear()
-            .domain([d3.min(dataset, function (d) { return d[0]; }) - 5, d3.max(dataset, function (d) { return d[0]; })])
+            .domain([d3.min(dataset, function (d) { return d[0]; }) - 1, d3.max(dataset, function (d) { return d[0]; })])
             .range([padding, w - padding]);
 
         var yScale = d3.scaleLinear()
-            .domain([d3.min(dataset, function (d) { return d[1]; }) - 10, d3.max(dataset, function (d) { return d[1]; })])
+            .domain([d3.min(dataset, function (d) { return d[1]; }) - 5, d3.max(dataset, function (d) { return d[1]; })])
             .range([h - padding, padding]);
 
         var svg = d3.select("body")
@@ -102,6 +103,25 @@
         svg.append("g")
         .attr("transform","translate("+ padding +", 0)")
         .call(yAxis)
+
+        // Add X axis label:
+        svg.append("text")
+            .attr("text-anchor", "end")
+            .attr("x", w - padding) // Position at the end of the x-axis
+            .attr("y", h - 20) // Slightly above the edge of the SVG
+            .attr("font-size", "14px")
+            .attr("fill", "black")
+            .text("Tree Age (year)");
+
+        // Add Y axis label:
+        svg.append("text")
+            .attr("text-anchor", "right")
+            .attr("transform", "rotate(-90)") // Rotate the text
+            .attr("x", -h / 2) // Inverse because of rotation
+            .attr("y", 20) // Adjust positioning
+            .attr("font-size", "14px")
+            .attr("fill", "black")
+            .text("Tree Height (m)");
 
     </script>
     <br>
