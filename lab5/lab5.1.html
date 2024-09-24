@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" class="page-lab5-2">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="description" content="Data Visualisation"/>
+    <meta name="keywords" content="HTML, CSS"/>
+    <meta name="author" content="Kam Yen Tong"/>
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+ 
+    <title>Task 5.1 D3 Update</title>
+</head>
+
+<body>
+    <header>
+        <ul class="navbar">
+            <li><a href="../mainpage.html">Home</a></li>
+            <li><a href="../lab5/lab5.1.html">Lab 5.1</a></li>
+            <li><a href="../lab5/lab5.2.html">Lab 5.2</a></li>
+            <li><a href="../lab5/lab5.3.html">Lab 5.3</a></li>
+        </ul>
+    </header>
+    
+    <h1>The D3 Journey starts here...</h1>
+
+    <div class="button-container">
+        <button id="update">Update Once</button>
+    </div>
+
+    <script>
+        var w = 600;
+        var h = 250;
+        var barPadding = 3;
+        var maxValue = 25;
+
+        var dataset = [24,10,29,19,8,15,20,12,9,6,21,28];
+
+        // xScale remains as scaleBand for evenly spaced bars
+        var xScale = d3.scaleBand()
+                    .domain(d3.range(dataset.length))
+                    .rangeRound([0, w])
+                    .paddingInner(0.05);
+
+        // yScale needs to be scaleLinear for correct bar height scaling
+        var yScale = d3.scaleLinear()
+                    .domain([0, d3.max(dataset)])
+                    .range([0, h]);
+    
+        // Create SVG container
+        var svg1 = d3.select("body")
+                .append("svg")
+                .attr("width", w)
+                .attr("height", h);
+
+        // Add bars to the chart
+        svg1.selectAll("rect")
+            .data(dataset)
+            .enter()
+            .append("rect")
+            .attr("x", function(d, i){
+                return xScale(i);
+            })
+            .attr("y", function(d){
+                return h - yScale(d); // Subtract yScale(d) from height for correct positioning
+            })
+            .attr("width", xScale.bandwidth())
+            .attr("height", function(d){
+                return yScale(d); // Use yScale to determine height
+            })
+            .attr("fill", function(d){
+                return "rgb(0, 0, " + Math.round(d * 10) + ")"; // Color based on data
+            });
+
+        // Add text labels to the bars
+        svg1.selectAll("text")
+            .data(dataset)
+            .enter()
+            .append("text")
+            .text(function(d){
+                return d;
+            })
+            .attr("x", function(d, i){
+                return xScale(i) + xScale.bandwidth() / 2; // Center the text in the bar
+            })
+            .attr("y", function(d){
+                return h - yScale(d) + 14; // Adjust text position
+            })
+            .attr("text-anchor", "middle") // Center align the text
+            .attr("fill", "white");
+
+            function updateData() {
+            var numValues = dataset.length; // Get number of bars
+            dataset = []; // Empty the dataset
+
+            // Generate random values between 0 and maxValue
+            for (var i = 0; i < numValues; i++) {
+                var newNumber = Math.floor(Math.random() * maxValue);
+                dataset.push(newNumber);
+            }
+
+            // Update scales based on new data
+            yScale.domain([0, d3.max(dataset)]);
+
+            // Update bars
+            svg1.selectAll("rect")
+                .data(dataset)
+                .transition() // Smooth transition for updated bars
+                .duration(500)
+                .attr("y", function (d) {
+                    return h - yScale(d);
+                })
+                .attr("height", function (d) {
+                    return yScale(d);
+                })
+                .attr("fill", function (d) {
+                    return "rgb(0, 0, " + Math.round(d * 10) + ")";
+                });
+
+            // Update text labels
+            svg1.selectAll("text")
+                .data(dataset)
+                .transition() // Smooth transition for updated text
+                .duration(500)
+                .text(function (d) {
+                    return d;
+                })
+                .attr("x", function (d, i) {
+                    return xScale(i) + xScale.bandwidth() / 2;
+                })
+                .attr("y", function (d) {
+                    return h - yScale(d) + 14;
+                });
+        }
+
+        // Button click event to update the chart
+        d3.select("button")
+            .on("click", function () {
+                updateData(); // Call the updateData function on button click
+            });
+
+    </script>
+
+    <br>
+    <br>
+    <footer style="color:grey">COS30045 Data Visualization<br>Kam Yen Tong Bloggs</footer>
+
+</body>
+</html>
