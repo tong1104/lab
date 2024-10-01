@@ -9,16 +9,15 @@
     <link rel="stylesheet" href="../style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
-    <title>Task 5.3 D3 Adding and Removing Data</title>
+    <title>Task 6.1 D3 Interactivity - Mouse Over Effect</title>
 </head>
 
 <body>
     <header>
         <ul class="navbar">
             <li><a href="../mainpage.html">Home</a></li>
-            <li><a href="../lab5/lab5.1.html">Lab 5.1</a></li>
-            <li><a href="../lab5/lab5.2.html">Lab 5.2</a></li>
-            <li><a href="../lab5/lab5.3.html">Lab 5.3</a></li>
+            <li><a href="../lab6/lab6.1.html">Lab 6.1</a></li>
+            <li><a href="../lab6/lab6.2.html">Lab 6.2</a></li>
         </ul>
     </header>
 
@@ -39,25 +38,25 @@
 
         // yScale is used to scale the bar heights based on dataset values
         var yScale = d3.scaleLinear()
-            .domain([0, d3.max(dataset) + 5])  
-            .range([0, h]);  
+            .domain([0, d3.max(dataset) + 5])
+            .range([0, h]);
 
         // xScale is used to position bars evenly along the x-axis
         var xScale = d3.scaleBand()
-            .domain(d3.range(dataset.length))  
-            .rangeRound([0, w])  
-            .paddingInner(0.05);  
+            .domain(d3.range(dataset.length))
+            .rangeRound([0, w])
+            .paddingInner(0.05);
 
         // Append the SVG element to the body, which will contain the chart
         var svg1 = d3.select("body")
             .append("svg")
-            .attr("width", w)  
-            .attr("height", h + 50);  
+            .attr("width", w)
+            .attr("height", h + 50);
 
         // Function to update the bars whenever data changes (called when adding/removing values)
         function updateBars() {
             // Update xScale for the new length of the dataset
-            xScale.domain(d3.range(dataset.length));  // Recalculate domain based on dataset length
+            xScale.domain(d3.range(dataset.length));
 
             // Bind data
             var bars = svg1.selectAll("rect")
@@ -67,54 +66,92 @@
             bars.enter()
                 .append("rect")
                 .attr("x", w)  // Initial position off-screen
-                .attr("y", function(d) { 
-                    return h - yScale(d); 
+                .attr("y", function (d) {
+                    return h - yScale(d);
                 })
                 .attr("width", xScale.bandwidth())  // Use updated xScale bandwidth
-                .attr("height", function(d) { 
-                    return yScale(d); 
+                .attr("height", function (d) {
+                    return yScale(d);
                 })
-                .attr("fill", function(d) { 
-                    return "rgb(0, 0, " + Math.round(d * 10) + ")"; 
+                .attr("fill", function (d) {
+                    return "rgb(0, 0, " + Math.round(d * 10) + ")";
+                })
+                // Mouseover effect: Change color on hover
+                .on("mouseover", function (event, d) {
+                    d3.select(this)
+                        .attr("fill", "orange");
+
+                    // Tooltip
+                    var xPosition = parseFloat(d3.select(this).attr("x")) + xScale.bandwidth() / 2;
+                    var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + h / 2;
+
+                    svg1.append("text")
+                        .attr("id", "tooltip")
+                        .attr("x", xPosition)
+                        .attr("y", yPosition)
+                        .attr("text-anchor", "middle")
+                        .attr("font-family", "sans-serif")
+                        .attr("font-weight", "bold")
+                        .attr("fill", "black")
+                        .text(d);
+                })
+                // Mouseout effect: Revert to original color and remove tooltip
+                .on("mouseout", function () {
+                    d3.select(this)
+                        .transition()
+                        .duration(500)
+                        .attr("fill", function (d) {
+                            return "rgb(0, 0, " + Math.round(d * 10) + ")";
+                        });
+
+                    d3.select("#tooltip").remove();
                 })
                 .merge(bars)
                 .transition()
                 .duration(500)
-                .attr("x", function(d, i) { 
-                    return xScale(i); 
+                .attr("x", function (d, i) {
+                    return xScale(i);
                 })
-                .attr("y", function(d) { 
-                    return h - yScale(d); 
+                .attr("y", function (d) {
+                    return h - yScale(d);
                 })
                 .attr("width", xScale.bandwidth())  // Update the width dynamically
-                .attr("height", function(d) { 
-                    return yScale(d); 
+                .attr("height", function (d) {
+                    return yScale(d);
                 });
 
+            // Remove any bars that no longer exist
+            bars.exit()
+                .transition()
+                .duration(500)
+                .attr("x", w)
+                .remove();
+
             // Bind data to text elements for bar labels
-            var text = svg1.selectAll("text")
+            var text = svg1.selectAll("text.bar-label")
                 .data(dataset);
 
             text.enter()
                 .append("text")
-                .attr("x", function(d, i) {
+                .attr("class", "bar-label")
+                .attr("x", function (d, i) {
                     return xScale(i) + xScale.bandwidth() / 2;
                 })
-                .attr("y", function(d) {
+                .attr("y", function (d) {
                     return h - yScale(d) - 10;
                 })
                 .attr("text-anchor", "middle")
-                .text(function(d) {
+                .text(function (d) {
                     return d;
                 })
                 .merge(text)
                 .transition()
                 .duration(500)
-                .attr("x", function(d, i) {
+                .attr("x", function (d, i) {
                     return xScale(i) + xScale.bandwidth() / 2;
                 })
-                .attr("y", function(d) {
-                    return h - yScale(d) - 10; 
+                .attr("y", function (d) {
+                    return h - yScale(d) - 10;
                 });
 
             // Remove any text elements for bars that no longer exist
@@ -133,23 +170,15 @@
         function removeValue() {
             dataset.shift(); // Remove the first element
             xScale.domain(d3.range(dataset.length)); // Update xScale
-            var bars = svg1.selectAll("rect").data(dataset);
-
-            bars.exit()
-                .transition()
-                .duration(500)
-                .attr("x", w)
-                .remove(); // Remove bars after transition
-
             updateBars(); // Update remaining bars
         }
 
         // Button click events
-        d3.select("#add").on("click", function() {
+        d3.select("#add").on("click", function () {
             addValue();
         });
 
-        d3.select("#remove").on("click", function() {
+        d3.select("#remove").on("click", function () {
             removeValue();
         });
 
