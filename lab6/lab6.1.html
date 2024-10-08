@@ -89,7 +89,7 @@
                         .attr("font-family", "sans-serif")
                         .attr("font-weight", "bold")
                         .attr("fill", "white")
-                        .text(value);  // Show the correct data point
+                        .text(d);  // Show the correct data point
                 })
                 // Mouseout event to reset color and remove value label
                 .on("mouseout", function (event, d) {
@@ -107,20 +107,26 @@
             var text = svg1.selectAll("text.bar-label")
                 .data(dataset); // Bind the dataset to text elements
 
-            text.enter()
+            // Enter new labels
+            var textEnter = text.enter()
                 .append("text")
                 .attr("class", "bar-label")
+                .attr("text-anchor", "middle")
+                .attr("font-family", "sans-serif")
+                .attr("font-weight", "bold")
+                .attr("fill", "black");
+
+            // Update the text positions and values
+            textEnter.merge(text)
                 .attr("x", function (d, i) {
                     return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
                 })
                 .attr("y", function (d) {
                     return h - yScale(d) - 5; // Position just above the bar
                 })
-                .attr("text-anchor", "middle")
                 .text(function (d) {
-                    return d;
-                })
-                .merge(text)
+                    return d; // Show the corresponding value
+                });
 
             // Exit selection for bars that are no longer in the data
             bars.exit()
