@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
-    <title>Task 6.1 D3 Interactivity - Mouse Over Effect</title>
+    <title>Task 6.2 D3 Interactivity - Sort</title>
 </head>
 
 <body>
@@ -26,6 +26,7 @@
     <div class="button-container">
         <button id="add">Add Value</button>
         <button id="remove">Remove Value</button>
+        <button id="sort">Sort Values</button> 
     </div>
 
     <script>
@@ -35,6 +36,7 @@
         var maxValue = 25; // Maximum value for randomly generated data
 
         var dataset = [24, 10, 29, 19, 8, 15, 20, 12, 9, 6, 21, 28];
+        var isAscending = true; // Variable to track sort direction
 
         // yScale is used to scale the bar heights based on dataset values
         var yScale = d3.scaleLinear()
@@ -56,7 +58,6 @@
             var bars = svg1.selectAll("rect")
                 .data(dataset);
 
-            // Enter new bars and update all bars
             bars.enter()
                 .append("rect")
                 .merge(bars)
@@ -89,57 +90,49 @@
                         .attr("font-family", "sans-serif")
                         .attr("font-weight", "bold")
                         .attr("fill", "white")
-                        .text(value);  // Show the correct data point
+                        .text(d);  // Show the correct data point
                 })
-                // Mouseout event to reset color and remove value label
                 .on("mouseout", function (event, d) {
-                    d3.select(this) // Select the current bar
+                    d3.select(this)
                         .transition()
                         .duration(500)
                         .attr("fill", function (d) {
-                            return "rgb(0, 0, " + Math.round(d * 10) + ")"; // Reset color based on data value
+                            return "rgb(0, 0, " + Math.round(d * 10) + ")";
                         });
 
                     d3.selectAll(".valueLabelInside").remove(); // Remove the tooltip
                 });
+            };
 
-            // Update the labels above the bars
-            var text = svg1.selectAll("text.bar-label")
-                .data(dataset); // Bind the dataset to text elements
+        
 
-            text.enter()
-                .append("text")
-                .attr("class", "bar-label")
+        // Function to sort bars
+        var sortBars = function () {
+            // Sort the dataset based on current direction
+            dataset.sort(isAscending ? d3.ascending : d3.descending);
+
+            // Update bars with new x values based on sorted dataset
+            svg1.selectAll("rect")
+                .sort(function (a, b) { return (isAscending ? d3.ascending(a, b) : d3.descending(a, b)); }) // Sort bars
+                .transition() // Add transition for sorting
+                .duration(750) // Duration for the transition
                 .attr("x", function (d, i) {
-                    return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2;
-                })
-                .attr("y", function (d) {
-                    return h - yScale(d) - 5; // Position just above the bar
-                })
-                .attr("text-anchor", "middle")
-                .text(function (d) {
-                    return d;
-                })
-                .merge(text)
+                    return i * (w / dataset.length); // Update x based on new sorted order
+                });
 
-            // Exit selection for bars that are no longer in the data
-            bars.exit()
+
+            svg1.selectAll("text.bar-label")
                 .transition()
-                .duration(500)
-                .attr("x", w)
-                .remove();
-            
-            // Exit selection for text labels that are no longer in the data
-            text.exit()
-                .transition()
-                .duration(500)
-                .remove();
-        }
+                .duration(750) // Duration for the transition
+                .attr("x", function (d, i) {
+                    return i * (w / dataset.length) + (w / dataset.length - barPadding) / 2; // Update x position for labels
+                });
+        };
 
         // Function to add a new value
         function addValue() {
-            var newNumber = Math.floor(Math.random() * maxValue); // Generate a random number
-            dataset.push(newNumber); // Add the new number to the dataset
+            var newNumber = Math.floor(Math.random() * maxValue);
+            dataset.push(newNumber);
             updateBars();
         }
 
@@ -158,14 +151,13 @@
             removeValue();
         });
 
+        d3.select("#sort").on("click", function () {
+            sortBars(); // Call the sort function
+            isAscending = !isAscending; // Sorting direction
+        });
+
         // Initialize the chart
         updateBars();
     </script>
-
-    <br>
-    <br>
-    <footer style="color:grey">COS30045 Data Visualization<br>Kam Yen Tong Bloggs</footer>
-
 </body>
-
 </html>
