@@ -166,3 +166,24 @@ footer {
     margin: 0 auto;
     margin-top: 50px; /* Adds space between buttons and the graph */
 }
+
+.line {
+    fill: none;
+    stroke: slategrey;
+    stroke-width: 2;
+}
+
+.area {
+    fill: lightsteelblue;
+    opacity: 0.6;
+}
+
+.halfMilMark {
+    stroke: red;
+    stroke-dasharray: 5, 5;
+}
+
+.halfMilLabel {
+    fill: red;
+    font-size: 12px;
+}
