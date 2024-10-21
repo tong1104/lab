@@ -18,6 +18,7 @@ function init() {
 
     // Load GeoJSON data
     d3.json("LGA_VIC.json").then(function(json){
+        //Link from InfinityFree hosting to the URL like https://raw.githubusercontent.com/tong1104/lab/refs/heads/main/lab8/LGA_VIC.json?token=GHSAT0AAAAAACYOHTVLCQD7FPYIA647SHSMZYPQKVA
         svg.selectAll("path")
            .data(json.features)
            .enter()

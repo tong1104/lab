@@ -36,6 +36,7 @@ function init() {
 
         // Load GeoJSON data for LGAs
         d3.json("LGA_VIC.json").then(function(json) {
+            //Link from InfinityFree hosting to the URL like https://raw.githubusercontent.com/tong1104/lab/refs/heads/main/lab8/LGA_VIC.json?token=GHSAT0AAAAAACYOHTVLCQD7FPYIA647SHSMZYPQKVA
             // Merge unemployment data with GeoJSON
             data.forEach(function(d) {
                 var dataLGA = d.LGA;
@@ -85,3 +86,4 @@ function init() {
 }
 
 window.onload = init;
+
