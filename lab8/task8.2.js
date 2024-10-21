@@ -19,26 +19,34 @@ function init() {
     // Define a color scale for unemployment data
     var color = d3.scaleQuantize()
                   .range([
-                      "rgb(237,248,233)", 
-                      "rgb(186,228,179)", 
-                      "rgb(116,196,118)", 
-                      "rgb(49,163,84)", 
-                      "rgb(0,109,44)"
+                      "rgb(222,235,247)", 
+                      "rgb(158,202,225)", 
+                      "rgb(107,174,214)", 
+                      "rgb(66,146,198)", 
+                      "rgb(33,113,181)"
                   ]);
 
-    // Load unemployment data
-    d3.csv("VIC_LGA_unemployment.csv").then(function(data) {
+    // Tooltip div for displaying city and unemployment information
+    var tooltip = d3.select("body")
+                    .append("div")
+                    .attr("class", "tooltip")
+                    .style("position", "absolute")
+                    .style("visibility", "hidden")
+                    .style("background", "#fff")
+                    .style("padding", "5px")
+                    .style("border", "1px solid #ccc")
+                    .style("border-radius", "4px");
+
+    d3.csv("VIC_LGA_unemployment.csv").then(function(unemploymentData) {
         // Set the domain of the color scale
         color.domain([
-            d3.min(data, d => +d.unemployed),
-            d3.max(data, d => +d.unemployed)
+            d3.min(unemploymentData, d => +d.unemployed),
+            d3.max(unemploymentData, d => +d.unemployed)
         ]);
 
-        // Load GeoJSON data for LGAs
         d3.json("LGA_VIC.json").then(function(json) {
-            //Link from InfinityFree hosting to the URL like https://raw.githubusercontent.com/tong1104/lab/refs/heads/main/lab8/LGA_VIC.json?token=GHSAT0AAAAAACYOHTVLCQD7FPYIA647SHSMZYPQKVA
-            // Merge unemployment data with GeoJSON
-            data.forEach(function(d) {
+            //Merge unemployment data with GeoJSON
+            unemploymentData.forEach(function(d) {
                 var dataLGA = d.LGA;
                 var dataValue = parseFloat(d.unemployed);
 
@@ -50,7 +58,7 @@ function init() {
                 });
             });
 
-            // Draw the map
+            //Draw the map with color encoding for unemployment data
             svg.selectAll("path")
                .data(json.features)
                .enter()
@@ -60,9 +68,23 @@ function init() {
                .attr("fill", function(d) {
                    var value = d.properties.unemployed;
                    return value ? color(value) : "#ccc"; // Default color if no data
+               })
+               .on("mouseover", function(event, d) {
+                   var value = d.properties.unemployed ? d.properties.unemployed : "No data";
+                   tooltip.style("visibility", "visible")
+                          .html(`LGA: ${d.properties.LGA_name}<br>Unemployment: ${value}`)
+                          .style("top", (event.pageY - 10) + "px")
+                          .style("left", (event.pageX + 10) + "px");
+               })
+               .on("mousemove", function(event) {
+                   tooltip.style("top", (event.pageY - 10) + "px")
+                          .style("left", (event.pageX + 10) + "px");
+               })
+               .on("mouseout", function() {
+                   tooltip.style("visibility", "hidden");
                });
 
-            // Load city data and add circles
+            //Load city data and add circles for towns/cities
             d3.csv("VIC_city.csv").then(function(cityData) {
                 svg.selectAll("circle")
                    .data(cityData)
@@ -72,7 +94,21 @@ function init() {
                    .attr("cy", d => projection([+d.lon, +d.lat])[1])
                    .attr("r", 5)
                    .style("fill", "red")
-                   .style("opacity", 0.75);
+                   .style("opacity", 0.75)
+                   .on("mouseover", function(event, d) {
+                       // Show only the place name on hover
+                       tooltip.style("visibility", "visible")
+                              .html(`Place: ${d.place}`)
+                              .style("top", (event.pageY - 10) + "px")
+                              .style("left", (event.pageX + 10) + "px");
+                   })
+                   .on("mousemove", function(event) {
+                       tooltip.style("top", (event.pageY - 10) + "px")
+                              .style("left", (event.pageX + 10) + "px");
+                   })
+                   .on("mouseout", function() {
+                       tooltip.style("visibility", "hidden");
+                   });
             }).catch(function(error) {
                 console.error("Error loading city data: ", error);
             });
@@ -81,9 +117,8 @@ function init() {
             console.error("Error loading GeoJSON: ", error);
         });
     }).catch(function(error) {
-        console.error("Error loading CSV: ", error);
+        console.error("Error loading unemployment data: ", error);
     });
 }
 
 window.onload = init;
-
