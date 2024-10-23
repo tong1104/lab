@@ -12,7 +12,8 @@ function init() {
     ];
 
     // Define color scale
-    var color = d3.scaleOrdinal(d3.schemePastel2)
+    var color = d3.scaleOrdinal(d3.schemePastel2);
+
     // Define xScale (band scale for categories)
     var xScale = d3.scaleBand()
         .domain(d3.range(dataset.length))
@@ -37,19 +38,20 @@ function init() {
     var svg = d3.select("body")
                 .append("svg")
                 .attr("width", w)
-                .attr("height", h);
+                .attr("height", h + 60); // Increase height for the legend
 
     // Add a group for each row of data 
-    var groups = svg.selectAll("g") 
+    var groups = svg.selectAll("g.series") 
         .data(series) 
         .enter() 
         .append("g") 
+        .attr("class", "series")
         .style("fill", function (d, i) { 
             return color(i); 
         });
 
     // Add a rect for each data value 
-    var rects = groups.selectAll("rect") 
+    groups.selectAll("rect") 
         .data(function (d) { 
             return d; 
         }) 
@@ -65,6 +67,38 @@ function init() {
             return yScale(d[0]) - yScale(d[1]); 
         }) 
         .attr("width", xScale.bandwidth());
+
+    // Create the legend
+    var keys = ["apples", "oranges", "grapes"];
+
+    var legend = svg.selectAll(".legend")
+                    .data(keys)
+                    .enter()
+                    .append("g")
+                    .attr("class", "legend")
+                    .attr("transform", function(d, i) {
+                        return "translate(" + (padding + i * 80) + "," + (h + 30) + ")";
+                    });
+
+    // Add color boxes to the legend
+    legend.append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 15)
+          .attr("height", 15)
+          .style("fill", function(d, i) {
+              return color(i);
+          });
+
+    // Add text to the legend
+    legend.append("text")
+          .attr("x", 20)
+          .attr("y", 12)
+          .text(function(d) {
+              return d;
+          })
+          .attr("font-size", "12px")
+          .attr("fill", "#000");
 }
 
 window.onload = init;
